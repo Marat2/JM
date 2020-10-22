@@ -16,7 +16,7 @@ public class Util {
     }
     public static  Connection getMysqlConnect(String hostName, String dbName,String userName, String password)
             throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
+        //Class.forName("com.mysql.cj.jdbc.Driver");
         String connectionURL = "jdbc:mysql://localhost:3306/jm?useSSL=false&serverTimezone=UTC";
         return DriverManager.getConnection(connectionURL, userName,password);
     }
