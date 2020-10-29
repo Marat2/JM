@@ -2,14 +2,17 @@ package jm.task.core.jdbc.util;
 
 import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.cfg.Configuration;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Environment;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Util {
     private static StandardServiceRegistry registry;
@@ -30,16 +33,17 @@ public class Util {
     }
 
     public static SessionFactory getHibernateConnect(){
-        if (sessionFactory==null){
-                Properties properties = new Properties();
-                properties.setProperty(Environment.DRIVER, "com.mysql.jdbc.Driver");
-                properties.setProperty(Environment.USER, "jmuser");
-                properties.setProperty(Environment.PASS, "QazQwe!23456");
-                properties.setProperty(Environment.URL, "jdbc:mysql://localhost:3306/jm?useSSL=false&serverTimezone=UTC");
-                Configuration cfg = new Configuration();
-                cfg.setProperties(properties);
-                cfg.addAnnotatedClass(User.class);
-                sessionFactory = cfg.buildSessionFactory();
+        Map<String,String> settings = new HashMap<>();
+        settings.put(Environment.DRIVER, "com.mysql.jdbc.Driver");
+        settings.put(Environment.USER, "jmuser");
+        settings.put(Environment.PASS, "QazQwe!23456");
+        settings.put(Environment.URL, "jdbc:mysql://localhost:3306/jm?useSSL=false&serverTimezone=UTC");
+        if (sessionFactory==null) {
+            StandardServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(settings).build();
+            MetadataSources metadataSources = new MetadataSources(registry);
+            metadataSources.addAnnotatedClass(User.class);
+            Metadata metadata = metadataSources.buildMetadata();
+            sessionFactory = metadata.buildSessionFactory();
         }
         return sessionFactory;
     }
